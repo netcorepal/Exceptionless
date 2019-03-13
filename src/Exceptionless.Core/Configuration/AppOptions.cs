@@ -11,6 +11,8 @@ namespace Exceptionless.Core {
     public class AppOptions {
         public string BaseURL { get; internal set; }
 
+        public bool UseSSL { get; internal set; }
+
         /// <summary>
         /// Internal project id keeps us from recursively logging to our self
         /// </summary>
@@ -75,6 +77,7 @@ namespace Exceptionless.Core {
 
         public void Configure(AppOptions options) {
             options.BaseURL = _configuration.GetValue<string>(nameof(options.BaseURL))?.TrimEnd('/');
+            options.UseSSL = _configuration.GetValue<bool>(nameof(options.UseSSL), true);
             options.InternalProjectId = _configuration.GetValue(nameof(options.InternalProjectId), "54b56e480ef9605a88a13153");
             options.ExceptionlessApiKey = _configuration.GetValue<string>(nameof(options.ExceptionlessApiKey));
             options.ExceptionlessServerUrl = _configuration.GetValue<string>(nameof(options.ExceptionlessServerUrl));

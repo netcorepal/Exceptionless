@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Net;
+using Exceptionless.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -18,14 +19,17 @@ namespace Exceptionless.Web.Security {
         public virtual void OnAuthorization(AuthorizationFilterContext filterContext) {
             if (filterContext == null)
                 throw new ArgumentNullException(nameof(filterContext));
-
+            
             var logger = filterContext.HttpContext.RequestServices.GetRequiredService<ILogger<RequireHttpsAttribute>>();
             if (IsSecure(filterContext.HttpContext.Request, logger))
                 return;
 
             if (IgnoreLocalRequests && IsLocal(filterContext.HttpContext.Request))
                 return;
-
+            var usessl = filterContext.HttpContext.RequestServices.GetService<IOptions<AppOptions>>()?.Value?.UseSSL;
+            if (usessl.HasValue && !usessl.Value) {
+                return;
+            }
             HandleNonHttpsRequest(filterContext);
         }
 

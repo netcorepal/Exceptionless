@@ -11,12 +11,13 @@ namespace Exceptionless.Core.Configuration {
         public int NumberOfReplicas { get; internal set; }
         public int FieldsLimit { get; internal set; } = 1500;
         public bool EnableMapperSizePlugin { get; internal set; }
-
         public string Scope { get; internal set; }
         public string ScopePrefix { get; internal set; }
 
         public bool EnableSnapshotJobs { get; set; }
         public bool DisableIndexConfiguration { get; set; }
+        public string Password { get; internal set; }
+        public string UserName { get; internal set; }
     }
 
     public class ConfigureElasticsearchOptions : IConfigureOptions<ElasticsearchOptions> {
@@ -50,6 +51,9 @@ namespace Exceptionless.Core.Configuration {
             options.FieldsLimit = fieldsLimit > 0 ? fieldsLimit : 1500;
 
             options.EnableMapperSizePlugin = pairs.GetValueOrDefault("enable-size-plugin", _appOptions.Value.AppMode != AppMode.Development);
+
+            options.UserName = pairs.GetString("username", "");
+            options.Password = pairs.GetString("password", "");
         }
     }
 }
